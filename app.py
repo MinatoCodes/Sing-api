@@ -77,7 +77,7 @@ demo = gr.Interface(
     title="YouTube to MP3 Converter",
     description="""Download the audio from a YouTube video in MP3 format.
 
-**Important note**: Due to YouTube restrictions, some videos requiring authentication cannot be downloaded in this Hugging Face Spaces environment. For full functionality, run this application locally or in Google Colab.""",
+**Important note**: Due to YouTube restrictions, some videos requiring authentication cannot be downloaded in this Hugging Face Spaces environment. For full functionality, run this application locally or in [Google Colab](https://github.com/piegu/language-models/blob/master/youtube_video_to_audio.ipynb).""",
     examples=[["https://www.youtube.com/watch?v=jNQXAC9IVRw"]]  # First YouTube video (Me at the zoo)
 )
 
