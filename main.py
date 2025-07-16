@@ -16,11 +16,13 @@ def download_audio(url: str = Query(..., description="YouTube video URL")):
     output_template = os.path.join(temp_dir, "%(title)s.%(ext)s")
 
     command = [
-        "yt-dlp",
-        "-x", "--audio-format", "mp3", "--audio-quality", "0",
-        "-o", output_template,
-        url
-    ]
+    "yt-dlp",
+    "--cookies", "cookies.txt",  # use your exported cookies file
+    "-x", "--audio-format", "mp3", "--audio-quality", "0",
+    "-o", output_template,
+    url
+]
+
 
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
