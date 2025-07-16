@@ -1,45 +1,43 @@
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Query
+from fastapi.responses import FileResponse, JSONResponse
 import subprocess
 import os
 import tempfile
 
 app = FastAPI()
 
-@app.get("/download")
-def download_audio(url: str = Query(..., description="YouTube video URL")):
-    if not url:
-        raise HTTPException(status_code=400, detail="URL is required")
+@app.get("/")
+async def root():
+    return {"message": "API is running"}
 
-    # Create temp dir
+@app.get("/download")
+async def download(url: str = Query(...)):
     temp_dir = tempfile.mkdtemp()
+
     output_template = os.path.join(temp_dir, "%(title)s.%(ext)s")
 
     command = [
-    "yt-dlp",
-    "--cookies", "cookies.txt",  # use your exported cookies file
-    "-x", "--audio-format", "mp3", "--audio-quality", "0",
-    "-o", output_template,
-    url
-]
-
+        "yt-dlp",
+        "--cookies", "cookies.txt",
+        "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+        "-x", "--audio-format", "mp3",
+        "-o", output_template,
+        url
+    ]
 
     try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
-
+        process = subprocess.run(command, capture_output=True, text=True)
         if process.returncode != 0:
-            error_output = stderr.decode('utf-8', errors='ignore')
-            raise HTTPException(status_code=500, detail=f"yt-dlp error: {error_output}")
+            return JSONResponse(status_code=500, content={"detail": f"yt-dlp error: {process.stderr}"})
 
-        # Find mp3 file
+        # Find the downloaded file
         for file in os.listdir(temp_dir):
             if file.endswith(".mp3"):
-                file_path = os.path.join(temp_dir, file)
-                return FileResponse(path=file_path, filename=file, media_type="audio/mpeg")
+                mp3_path = os.path.join(temp_dir, file)
+                return FileResponse(mp3_path, media_type='audio/mpeg', filename=file)
 
-        raise HTTPException(status_code=500, detail="MP3 file not found")
+        return JSONResponse(status_code=500, content={"detail": "Download succeeded but MP3 not found"})
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-                                   
+        return JSONResponse(status_code=500, content={"detail": str(e)})
+    
