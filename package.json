@@ -1,0 +1,15 @@
+{
+  "name": "ytmp3-api",
+  "version": "1.0.0",
+  "description": "YouTube to MP3 API by MinatoCodes",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "MinatoCodes",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "express": "^4.18.2"
+  }
+}
