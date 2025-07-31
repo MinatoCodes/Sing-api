@@ -4,7 +4,7 @@ const axios = require("axios");
 const BASE = "https://cnvmp3.com/";
 
 module.exports = async function detectVersion() {
-  for (let i = 35; i >= 20; i--) {
+  for (let i=28;i<=50;i++) {
     const url = `${BASE}v${i}/get_video_data.php`;
     try {
       const res = await axios.post(url, {
